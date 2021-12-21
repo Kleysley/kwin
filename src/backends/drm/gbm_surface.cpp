@@ -65,19 +65,24 @@ GbmSurface::~GbmSurface()
         gbm_surface_destroy(m_surface);
     }
 }
-bool GbmSurface::makeContextCurrent() const
+
+QRegion GbmSurface::makeContextCurrent(const QRect &geometry) const
 {
     if (eglMakeCurrent(m_gpu->eglDisplay(), m_eglSurface, m_eglSurface, m_gpu->eglBackend()->context()) == EGL_FALSE) {
         qCCritical(KWIN_DRM) << "eglMakeCurrent failed:" << getEglErrorString();
-        return false;
+        return {};
     }
     if (!GLPlatform::instance()->isGLES()) {
         glDrawBuffer(GL_BACK);
     }
-    return true;
+    if (m_gpu->eglBackend()->supportsBufferAge()) {
+        return m_damageJournal.accumulate(m_bufferAge, geometry);
+    } else {
+        return geometry;
+    }
 }
 
-QSharedPointer<DrmGbmBuffer> GbmSurface::swapBuffersForDrm()
+QSharedPointer<DrmGbmBuffer> GbmSurface::swapBuffersForDrm(const QRegion &dirty)
 {
     auto error = eglSwapBuffers(m_gpu->eglDisplay(), m_eglSurface);
     if (error != EGL_TRUE) {
@@ -95,10 +100,14 @@ QSharedPointer<DrmGbmBuffer> GbmSurface::swapBuffersForDrm()
         return nullptr;
     }
     m_currentDrmBuffer = buffer;
+    if (m_gpu->eglBackend()->supportsBufferAge()) {
+        eglQuerySurface(m_gpu->eglDisplay(), m_eglSurface, EGL_BUFFER_AGE_EXT, &m_bufferAge);
+        m_damageJournal.add(dirty);
+    }
     return buffer;
 }
 
-QSharedPointer<GbmBuffer> GbmSurface::swapBuffers()
+QSharedPointer<GbmBuffer> GbmSurface::swapBuffers(const QRegion &dirty)
 {
     auto error = eglSwapBuffers(m_gpu->eglDisplay(), m_eglSurface);
     if (error != EGL_TRUE) {
@@ -111,6 +120,10 @@ QSharedPointer<GbmBuffer> GbmSurface::swapBuffers()
     }
     m_currentBuffer = QSharedPointer<GbmBuffer>::create(this, bo);
     m_lockedBuffers << m_currentBuffer.get();
+    if (m_gpu->eglBackend()->supportsBufferAge()) {
+        eglQuerySurface(m_gpu->eglDisplay(), m_eglSurface, EGL_BUFFER_AGE_EXT, &m_bufferAge);
+        m_damageJournal.add(dirty);
+    }
     return m_currentBuffer;
 }
 
@@ -148,6 +161,11 @@ bool GbmSurface::isValid() const
 uint32_t GbmSurface::format() const
 {
     return m_format;
+}
+
+int GbmSurface::bufferAge() const
+{
+    return m_bufferAge;
 }
 
 }
