@@ -13,6 +13,7 @@
 #include "drm_pointer.h"
 #include "drm_object.h"
 #include "drm_object_plane.h"
+#include "colors.h"
 
 #include <QObject>
 #include <QPoint>
@@ -64,6 +65,8 @@ public:
     void presentFailed();
     bool usesSoftwareCursor() const override;
 
+    void setColorTransformation(const QSharedPointer<ColorTransformation> &transformation) override;
+
 private:
     void initOutputDevice();
 
@@ -73,8 +76,6 @@ private:
 
     QVector<AbstractWaylandOutput::Mode> getModes() const;
 
-    int gammaRampSize() const override;
-    bool setGammaRamp(const GammaRamp &gamma) override;
     void updateCursor();
     void moveCursor();
 

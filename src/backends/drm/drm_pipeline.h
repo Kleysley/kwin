@@ -20,6 +20,7 @@
 #include "drm_object_plane.h"
 #include "renderloop_p.h"
 #include "abstract_wayland_output.h"
+#include "colors.h"
 
 namespace KWin
 {
@@ -34,18 +35,15 @@ class GammaRamp;
 class DrmGammaRamp
 {
 public:
-    DrmGammaRamp(DrmGpu *gpu, const GammaRamp &lut);
+    DrmGammaRamp(DrmCrtc *crtc, const QSharedPointer<ColorTransformation> &transformation);
     ~DrmGammaRamp();
 
-    uint32_t size() const;
-    uint16_t *red() const;
-    uint16_t *green() const;
-    uint16_t *blue() const;
+    const ColorLUT &lut() const;
     uint32_t blobId() const;
 
 private:
     DrmGpu *m_gpu;
-    const GammaRamp m_lut;
+    const ColorLUT m_lut;
     uint32_t m_blobId = 0;
 };
 
@@ -101,6 +99,7 @@ public:
         uint32_t overscan = 0;
         AbstractWaylandOutput::RgbRange rgbRange = AbstractWaylandOutput::RgbRange::Automatic;
         RenderLoopPrivate::SyncMode syncMode = RenderLoopPrivate::SyncMode::Fixed;
+        QSharedPointer<ColorTransformation> colorTransformation;
         QSharedPointer<DrmGammaRamp> gamma;
 
         QPoint cursorPos;

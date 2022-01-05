@@ -350,24 +350,6 @@ bool DrmOutput::present(const QSharedPointer<DrmBuffer> &buffer, QRegion damaged
     }
 }
 
-int DrmOutput::gammaRampSize() const
-{
-    return m_pipeline->pending.crtc ? m_pipeline->pending.crtc->gammaRampSize() : 256;
-}
-
-bool DrmOutput::setGammaRamp(const GammaRamp &gamma)
-{
-    m_pipeline->pending.gamma = QSharedPointer<DrmGammaRamp>::create(m_gpu, gamma);
-    if (DrmPipeline::commitPipelines({m_pipeline}, DrmPipeline::CommitMode::Test)) {
-        m_pipeline->applyPendingChanges();
-        m_renderLoop->scheduleRepaint();
-        return true;
-    } else {
-        m_pipeline->revertPendingChanges();
-        return false;
-    }
-}
-
 DrmConnector *DrmOutput::connector() const
 {
     return m_connector;
@@ -477,6 +459,17 @@ int DrmOutput::maxBpc() const
 bool DrmOutput::usesSoftwareCursor() const
 {
     return !m_setCursorSuccessful || !m_moveCursorSuccessful;
+}
+
+void DrmOutput::setColorTransformation(const QSharedPointer<ColorTransformation> &transformation)
+{
+    m_pipeline->pending.colorTransformation = transformation;
+    if (DrmPipeline::commitPipelines({m_pipeline}, DrmPipeline::CommitMode::Test)) {
+        m_pipeline->applyPendingChanges();
+        m_renderLoop->scheduleRepaint();
+    } else {
+        m_pipeline->revertPendingChanges();
+    }
 }
 
 }

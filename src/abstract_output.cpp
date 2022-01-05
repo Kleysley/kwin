@@ -14,47 +14,6 @@
 namespace KWin
 {
 
-GammaRamp::GammaRamp(uint32_t size)
-    : m_table(3 * size)
-    , m_size(size)
-{
-}
-
-uint32_t GammaRamp::size() const
-{
-    return m_size;
-}
-
-uint16_t *GammaRamp::red()
-{
-    return m_table.data();
-}
-
-const uint16_t *GammaRamp::red() const
-{
-    return m_table.data();
-}
-
-uint16_t *GammaRamp::green()
-{
-    return m_table.data() + m_size;
-}
-
-const uint16_t *GammaRamp::green() const
-{
-    return m_table.data() + m_size;
-}
-
-uint16_t *GammaRamp::blue()
-{
-    return m_table.data() + 2 * m_size;
-}
-
-const uint16_t *GammaRamp::blue() const
-{
-    return m_table.data() + 2 * m_size;
-}
-
 QDebug operator<<(QDebug debug, const AbstractOutput *output)
 {
     QDebugStateSaver saver(debug);
@@ -115,17 +74,6 @@ QSize AbstractOutput::physicalSize() const
     return QSize();
 }
 
-int AbstractOutput::gammaRampSize() const
-{
-    return 0;
-}
-
-bool AbstractOutput::setGammaRamp(const GammaRamp &gamma)
-{
-    Q_UNUSED(gamma);
-    return false;
-}
-
 QString AbstractOutput::manufacturer() const
 {
     return QString();
@@ -169,6 +117,11 @@ std::chrono::milliseconds AbstractOutput::dimAnimationTime()
 bool AbstractOutput::usesSoftwareCursor() const
 {
     return true;
+}
+
+void AbstractOutput::setColorTransformation(const QSharedPointer<ColorTransformation> &transformation)
+{
+    Q_UNUSED(transformation);
 }
 
 } // namespace KWin

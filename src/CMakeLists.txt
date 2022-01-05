@@ -31,6 +31,7 @@ set(kwin_SRCS
     client_machine.cpp
     colordevice.cpp
     colormanager.cpp
+    colors.cpp
     composite.cpp
     cursor.cpp
     dbusinterface.cpp

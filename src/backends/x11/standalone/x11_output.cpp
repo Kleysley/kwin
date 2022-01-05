@@ -8,6 +8,7 @@
 */
 #include "x11_output.h"
 #include "main.h"
+#include "colors.h"
 
 namespace KWin
 {
@@ -56,21 +57,13 @@ void X11Output::setRefreshRate(int set)
     m_refreshRate = set;
 }
 
-int X11Output::gammaRampSize() const
-{
-    return m_gammaRampSize;
-}
-
-bool X11Output::setGammaRamp(const GammaRamp &gamma)
+void X11Output::setColorTransformation(const QSharedPointer<ColorTransformation> &transformation)
 {
     if (m_crtc == XCB_NONE) {
-        return false;
+        return;
     }
-
-    xcb_randr_set_crtc_gamma(kwinApp()->x11Connection(), m_crtc, gamma.size(), gamma.red(),
-        gamma.green(), gamma.blue());
-
-    return true;
+    ColorLUT lut(transformation, m_gammaRampSize);
+    xcb_randr_set_crtc_gamma(kwinApp()->x11Connection(), m_crtc, lut.size(), lut.red(), lut.green(), lut.blue());
 }
 
 void X11Output::setCrtc(xcb_randr_crtc_t crtc)

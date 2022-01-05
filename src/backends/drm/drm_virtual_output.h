@@ -35,9 +35,6 @@ public:
     bool isFormatSupported(uint32_t drmFormat) const override;
     QVector<uint64_t> supportedModifiers(uint32_t drmFormat) const override;
     int maxBpc() const override;
-
-    int gammaRampSize() const override;
-    bool setGammaRamp(const GammaRamp &gamma) override;
     bool needsSoftwareTransformation() const override;
 
 private:

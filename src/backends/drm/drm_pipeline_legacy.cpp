@@ -98,8 +98,8 @@ bool DrmPipeline::applyPendingChangesLegacy()
             return false;
         }
         m_connector->getProp(DrmConnector::PropertyIndex::Dpms)->setCurrent(DRM_MODE_DPMS_ON);
-        if (pending.gamma && drmModeCrtcSetGamma(gpu()->fd(), pending.crtc->id(), pending.gamma->size(),
-                                    pending.gamma->red(), pending.gamma->green(), pending.gamma->blue()) != 0) {
+        if (pending.gamma && drmModeCrtcSetGamma(gpu()->fd(), pending.crtc->id(), pending.gamma->lut().size(),
+                                    pending.gamma->lut().red(), pending.gamma->lut().green(), pending.gamma->lut().blue()) != 0) {
             qCWarning(KWIN_DRM) << "Setting gamma failed!" << strerror(errno);
             return false;
         }

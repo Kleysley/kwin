@@ -41,14 +41,12 @@ public:
     int refreshRate() const override;
     void setRefreshRate(int set);
 
-    int gammaRampSize() const override;
-    bool setGammaRamp(const GammaRamp &gamma) override;
-
     QSize physicalSize() const override;
     void setPhysicalSize(const QSize &size);
 
     QSize pixelSize() const override;
     bool usesSoftwareCursor() const override;
+    void setColorTransformation(const QSharedPointer<ColorTransformation> &transformation) override;
 
 private:
     void setCrtc(xcb_randr_crtc_t crtc);
