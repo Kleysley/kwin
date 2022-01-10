@@ -29,6 +29,8 @@ set(kwin_SRCS
     appmenu.cpp
     atoms.cpp
     client_machine.cpp
+    colordevice.cpp
+    colormanager.cpp
     composite.cpp
     cursor.cpp
     dbusinterface.cpp
@@ -229,18 +231,11 @@ target_link_libraries(kwin
     epoxy::epoxy
 
     Threads::Threads
+    lcms2::lcms2
 )
 
 add_subdirectory(backends)
 add_subdirectory(scenes)
-
-if (KWIN_BUILD_CMS)
-    target_sources(kwin PRIVATE
-        colordevice.cpp
-        colormanager.cpp
-    )
-    target_link_libraries(kwin lcms2::lcms2)
-endif()
 
 if (KWIN_BUILD_ACTIVITIES)
     target_sources(kwin PRIVATE activities.cpp)

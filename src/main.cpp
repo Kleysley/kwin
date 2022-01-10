@@ -12,9 +12,7 @@
 // kwin
 #include "platform.h"
 #include "atoms.h"
-#ifdef KWIN_BUILD_CMS
 #include "colormanager.h"
-#endif
 #include "composite.h"
 #include "cursor.h"
 #include "input.h"
@@ -316,9 +314,7 @@ void Application::createPlugins()
 
 void Application::createColorManager()
 {
-#ifdef KWIN_BUILD_CMS
     ColorManager::create(this);
-#endif
 }
 
 void Application::createInputMethod()
@@ -358,9 +354,7 @@ void Application::destroyPlugins()
 
 void Application::destroyColorManager()
 {
-#ifdef KWIN_BUILD_CMS
     delete ColorManager::self();
-#endif
 }
 
 void Application::destroyInputMethod()
