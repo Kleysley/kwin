@@ -100,33 +100,6 @@ void Placement::place(AbstractClient *c, const QRect &area, Policy policy, Polic
     default:
         placeSmart(c, area, nextPlacement);
     }
-
-    if (options->borderSnapZone()) {
-        // snap to titlebar / snap to window borders on inner screen edges
-        const QRect geo(c->moveResizeGeometry());
-        QPoint corner = geo.topLeft();
-        const QMargins frameMargins = c->frameMargins();
-        Qt::Edge titlePos = c->titlebarPosition();
-
-        const QRect fullRect = workspace()->clientArea(FullArea, c);
-        if (!(c->maximizeMode() & MaximizeHorizontal)) {
-            if (titlePos != Qt::RightEdge && geo.right() == fullRect.right()) {
-                corner.rx() += frameMargins.right();
-            }
-            if (titlePos != Qt::LeftEdge && geo.left() == fullRect.left()) {
-                corner.rx() -= frameMargins.left();
-            }
-        }
-        if (!(c->maximizeMode() & MaximizeVertical)) {
-            if (titlePos != Qt::BottomEdge && geo.bottom() == fullRect.bottom()) {
-                corner.ry() += frameMargins.bottom();
-            }
-            if (titlePos != Qt::TopEdge && geo.top() == fullRect.top()) {
-                corner.ry() -= frameMargins.top();
-            }
-        }
-        c->move(corner);
-    }
 }
 
 /**
